@@ -16,7 +16,7 @@ export function GameCanvas({ stateRef }: Props) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    function draw() {
+    const draw = () => {
       const s = stateRef.current
       ctx.fillStyle = COLORS.background
       ctx.fillRect(0, 0, CANVAS_PX, CANVAS_PX)
