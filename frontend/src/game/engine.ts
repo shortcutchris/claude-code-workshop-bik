@@ -70,17 +70,22 @@ export function tick(state: GameState): TickResult {
 
   const collided = checkCollision(newSnake)
 
-  const newFood = ateFood ? spawnFood(newSnake) : state.food
+  const totalCells = GRID_SIZE * GRID_SIZE
+  const isWon = newSnake.length === totalCells
+
+  // skip food respawn if board is full (no free cells)
+  const respawnedFood = ateFood && !isWon ? spawnFood(newSnake) : state.food
 
   return {
     state: {
       ...state,
       snake: newSnake,
-      food: newFood,
+      food: respawnedFood,
       direction,
+      isWon,
       // nextDirection stays buffered until next applyDirection call
     },
     ateFood,
-    collided,
+    collided: collided || isWon,
   }
 }
