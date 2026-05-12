@@ -1,5 +1,5 @@
 import { GRID_SIZE, OPPOSITE } from './constants'
-import type { Direction, GameState, Position } from './types'
+import type { Direction, GameState, Position, TickResult } from './types'
 
 export function spawnFood(snake: Position[]): Position {
   const occupied = new Set(snake.map(p => `${p.x},${p.y}`))
@@ -46,4 +46,41 @@ export function checkCollision(snake: Position[]): boolean {
     if (snake[i].x === head.x && snake[i].y === head.y) return true
   }
   return false
+}
+
+const DELTA: Record<Direction, Position> = {
+  up:    { x: 0, y: -1 },
+  down:  { x: 0, y: 1 },
+  left:  { x: -1, y: 0 },
+  right: { x: 1, y: 0 },
+}
+
+export function tick(state: GameState): TickResult {
+  const direction = state.nextDirection
+  const d = DELTA[direction]
+  const head = state.snake[0]
+  const newHead: Position = { x: head.x + d.x, y: head.y + d.y }
+
+  const ateFood = newHead.x === state.food.x && newHead.y === state.food.y
+
+  // grow if ate, otherwise drop tail
+  const newSnake: Position[] = ateFood
+    ? [newHead, ...state.snake]
+    : [newHead, ...state.snake.slice(0, -1)]
+
+  const collided = checkCollision(newSnake)
+
+  const newFood = ateFood ? spawnFood(newSnake) : state.food
+
+  return {
+    state: {
+      ...state,
+      snake: newSnake,
+      food: newFood,
+      direction,
+      // nextDirection stays buffered until next applyDirection call
+    },
+    ateFood,
+    collided,
+  }
 }
