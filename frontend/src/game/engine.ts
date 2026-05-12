@@ -1,5 +1,5 @@
-import { GRID_SIZE } from './constants'
-import type { GameState, Position } from './types'
+import { GRID_SIZE, OPPOSITE } from './constants'
+import type { Direction, GameState, Position } from './types'
 
 export function spawnFood(snake: Position[]): Position {
   const occupied = new Set(snake.map(p => `${p.x},${p.y}`))
@@ -27,4 +27,12 @@ export function createInitialState(): GameState {
     nextDirection: 'right',
     isWon: false,
   }
+}
+
+export function applyDirection(state: GameState, input: Direction): GameState {
+  // Compare against last committed direction, NOT nextDirection
+  if (OPPOSITE[state.direction] === input) {
+    return state
+  }
+  return { ...state, nextDirection: input }
 }
