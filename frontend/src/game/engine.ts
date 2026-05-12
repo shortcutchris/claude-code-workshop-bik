@@ -36,3 +36,14 @@ export function applyDirection(state: GameState, input: Direction): GameState {
   }
   return { ...state, nextDirection: input }
 }
+
+export function checkCollision(snake: Position[]): boolean {
+  const head = snake[0]
+  if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+    return true
+  }
+  for (let i = 1; i < snake.length; i++) {
+    if (snake[i].x === head.x && snake[i].y === head.y) return true
+  }
+  return false
+}
